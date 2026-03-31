@@ -6,8 +6,6 @@ print("TOKEN:", TOKEN)
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler, ContextTypes
 
-TOKEN = os.getenv("BOT_TOKEN")
-
 # MENÚ PRINCIPAL
 def main_menu():
     keyboard = [
@@ -33,6 +31,15 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     data = query.data
 
+    # 🔙 VOLVER AL MENÚ
+    if data == "back":
+        await query.edit_message_text(
+            "👋 Menú principal:",
+            reply_markup=main_menu()
+        )
+        return
+
+    # OPCIONES
     if data == "citas":
         text = "📅 Gestión de citas de extranjería."
     elif data == "docs":
@@ -47,13 +54,11 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         text = "Opción no válida."
 
     keyboard = [[InlineKeyboardButton("⬅️ Volver", callback_data="back")]]
-    await query.edit_message_text(text=text, reply_markup=InlineKeyboardMarkup(keyboard))
 
-    if data == "back":
-        await query.edit_message_text(
-            "👋 Menú principal:",
-            reply_markup=main_menu()
-        )
+    await query.edit_message_text(
+        text=text,
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
 
 # MAIN
 def main():
